@@ -31,6 +31,7 @@ export default {
     SocketioService.disconnect();
   },
   mounted() {
+    this.login()
     SocketioService.requestSessionID()
   },
   methods: {
@@ -40,6 +41,10 @@ export default {
 
       this.peer.on('open', (id) => {
         this.myID = id
+        console.log("PeerJS ID:", this.myID)
+        SocketioService.socket.emit("register-ID", {
+          peerID: this.myID,
+        });
       });
 
       this.peer.on('connection', (conn) => {
