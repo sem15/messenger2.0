@@ -15,14 +15,12 @@ app.get('/', (req, res) => {
 
 io.on('connection', (socket) => {
   console.log('a user connected');
-  console.log(socket.id)
-  users.push(socket.id)
-  console.log("Number of active connections is now:", users.length)
 
   socket.on('disconnect', () => {
-    let index = users.indexOf(socket.id);
-    if (index > -1) {
-      users.splice(index, 1);
+    for(let i = 0; i < users.length; i++) {
+      if(users[i].socketID = socket.id) {
+        users.splice(i, 1)
+      }
     }
     console.log('user disconnected');
     console.log("Number of active connections is now:", users.length)
@@ -31,6 +29,14 @@ io.on('connection', (socket) => {
   //returns sessionid to frontend
   socket.on('request-sessionid', () => {
     io.to(socket.id).emit('return-sessionid', `${socket.id}`);
+  });
+
+  socket.on('register-ID', (data) => {
+    let user = new Object()
+    user.peerID = data.peerID
+    user.socketID = socket.id
+    users.push(user)
+    console.log(users)
   });
 
   //sends offer to target clients
