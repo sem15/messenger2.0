@@ -18,12 +18,13 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     for(let i = 0; i < users.length; i++) {
-      if(users[i].socketID = socket.id) {
+      if(users[i].socketID == socket.id) {
         users.splice(i, 1)
       }
     }
     console.log('user disconnected');
     console.log("Number of active connections is now:", users.length)
+    console.log(users)
   });
 
   //returns sessionid to frontend
@@ -34,6 +35,7 @@ io.on('connection', (socket) => {
   socket.on('register-ID', (data) => {
     let user = new Object()
     user.peerID = data.peerID
+    user.name = data.name
     user.socketID = socket.id
     users.push(user)
     console.log(users)

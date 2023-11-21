@@ -44,6 +44,7 @@ export default {
         console.log("PeerJS ID:", this.myID)
         SocketioService.socket.emit("register-ID", {
           peerID: this.myID,
+          name: `guest${Math.floor(Math.random() * 100) + 1}`
         });
       });
 
