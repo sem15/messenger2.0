@@ -1,6 +1,8 @@
 <template>
   <div>
-
+    <div v-for="user in users" :key="user">
+      <button v-if="user.peerID != myID" @click="initConnection(user.peerID)">{{ user.name }}</button>
+    </div>
   </div>
 </template>
 
@@ -18,6 +20,8 @@ export default {
       sessionID: undefined,
       myID: null,
       peer: null,
+      users: {},
+      conn: null,
     }
   },
   created() {
@@ -25,6 +29,11 @@ export default {
     SocketioService.socket.on('return-sessionid', (data) => {
       this.sessionID = data
       console.log(data)
+    });
+    SocketioService.socket.on('update-users', (data) => {
+      this.users = new Object()
+      this.users = data
+      console.log(this.users)
     });
   },
   beforeUnmount() {
@@ -50,7 +59,6 @@ export default {
 
       this.peer.on('connection', (conn) => {
         this.conn = conn
-        this.activeConnection = true
         conn.on('open', () => {
         // Receive messages
         conn.on('data', (data) => {
@@ -62,6 +70,21 @@ export default {
         });
       });
 
+    },
+    initConnection(target) {
+      var conn = this.peer.connect(target)
+      this.conn = conn
+
+      conn.on('open', () => {
+      // Receive messages
+      conn.on('data', (data) => {
+        console.log("Recieved: ", data)
+      });
+
+      // Send messages
+      conn.send('Hello!');
+      });
+      
     },
   }
 }

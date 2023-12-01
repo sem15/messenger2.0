@@ -6,7 +6,7 @@ const io = require('socket.io')(http, {
   }
 });
 
-const users = []
+var users = []
 
 
 app.get('/', (req, res) => {
@@ -22,8 +22,10 @@ io.on('connection', (socket) => {
         users.splice(i, 1)
       }
     }
+    console.clear()
     console.log('user disconnected');
     console.log("Number of active connections is now:", users.length)
+    io.sockets.emit('update-users', users);
     console.log(users)
   });
 
@@ -38,27 +40,9 @@ io.on('connection', (socket) => {
     user.name = data.name
     user.socketID = socket.id
     users.push(user)
+    io.sockets.emit('update-users', users);
+    console.clear()
     console.log(users)
-  });
-
-  //sends offer to target clients
-  socket.on("offer", (message) => {
-    const offer = message.offer;
-    let targetClient
-
-    // Send the offer to the other client
-    for(let i = 0; i < users.length; i++) {
-      if(users[i] != socket.id) {
-        targetClient = users[i]
-        console.log("target client:", targetClient)
-      }
-    }
-
-    console.log(socket.id, '=>', targetClient)
-    console.log(offer)
-
-    //This is a temporary solution for testing and will assume there is only one other client who will connect.
-    io.to(targetClient).emit('offer', offer);
   });
 });
 
